@@ -31,7 +31,6 @@ function App() {
         }
         setUser(signedInUser)
         setLoIn(true);
-        console.log(signedInUser)
         
       }).catch((error) => {
         // Handle Errors here.
@@ -78,8 +77,9 @@ createUserWithEmailAndPassword(auth, email, password)
     signInWhenCreate(email, password , name);
   })
   .catch((error) => {
-    const errorCode = error.code;
     const errorMessage = error.message;
+    user.err = errorMessage;
+    setUser(user);
     // console.log(errorCode);
     // console.log(errorMessage);
     // ..
@@ -91,15 +91,19 @@ createUserWithEmailAndPassword(auth, email, password)
     // Signed in 
     const userAuth = userCredential.user;
     user.name = userAuth.displayName;
+     user.successMessage = "SignedIn";
+     user.err = false;
         setUser(user)
         setLoIn(true)
-    console.log(user);
+
     // ...
 
   })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
+    user.err = errorMessage;
+    setUser(user);
   });
 
 
@@ -108,7 +112,7 @@ createUserWithEmailAndPassword(auth, email, password)
 const signInWhenCreate = (email , password , name)=>{
 
   signInWithEmailAndPassword(auth, email, password )
-  .then((userCredential) => {
+  .then(() => {
     // Signed in 
 
     updateProfile(auth.currentUser, {
@@ -118,6 +122,8 @@ const signInWhenCreate = (email , password , name)=>{
       // ...
 
     user.name = name;
+    user.successMessage = "createdUser";
+    user.err = false;
         setUser(user)
         setLoIn(true)
     console.log(user);
@@ -125,13 +131,17 @@ const signInWhenCreate = (email , password , name)=>{
 
     }).catch((error) => {
       // An error occurred
-      // ...
+      const errorMessage = error.message;
+      user.err = errorMessage;
+    setUser(user);
     });
 
   })
   .catch((error) => {
-    const errorCode = error.code;
+    // const errorCode = error.code;
     const errorMessage = error.message;
+    user.err = errorMessage;
+    setUser(user);
   });
 
 
@@ -151,7 +161,7 @@ const handleFbSign = ()=>{
     }
     setUser(signedInUser)
     setLoIn(true);
-    console.log(result.user)
+  
     // // This gives you a Facebook Access Token. You can use it to access the Facebook API.
     // const credential = FacebookAuthProvider.credentialFromResult(result);
     // const accessToken = credential.accessToken;
@@ -162,7 +172,8 @@ const handleFbSign = ()=>{
     // Handle Errors here.
     // const errorCode = error.code;
     const errorMessage = error.message;
-    console.log(errorMessage)
+    user.err = errorMessage;
+    setUser(user);
     // // The email of the user's account used.
     // const email = error.email;
     // // The AuthCredential type that was used.
@@ -199,6 +210,10 @@ return (
     </form>
     </div>
 }
+{ user.successMessage === "createdUser" && <span> <br/> User Created Successfully </span> }
+{ user.successMessage === "SignedIn"  && <span><br/>User Signed in Successfully</span> }
+ <span style={{color: "red"}}><br/>{user.err}</span>
+
     </div>
   );
 }
